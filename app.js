@@ -1,15 +1,17 @@
 import express from "express";
 import connectDB from './configs/database.js'
 import User from './models/user.js'
-import ValidateSignup from './utils/validation.js'
-import ValidateLogin from './utils/validation.js'
+import {ValidateSignup,ValidateLogin} from './utils/validation.js'
+// import ValidateLogin from './utils/validation.js'
 import bcrypt from 'bcrypt'
+import cookieParser from "cookie-parser";
+import jsonwebtoken from "jsonwebtoken";
 
 const app = express();
 const PORT = 7777;
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.post("/signup",async(req,res)=>{
   try{
 
@@ -51,6 +53,7 @@ app.post("/login",async(req,res)=>{
   const realpassword = user.password;
   const isMatch = await bcrypt.compare(password, realpassword)
   if(isMatch){
+res.cookie("token", "12egw72fd264eer2367@#$%^DT^#%^D");
   res.send("LogIn Successfull")
   }
   else{
@@ -61,7 +64,6 @@ catch(err){
    res.status(400).send("Login Failed due to: " + err.message)
 }
 })
-
 
 
 app.delete("/user", async (req,res)=>{
@@ -83,7 +85,7 @@ app.delete("/user", async (req,res)=>{
 app.post("/user", async (req, res) => {
   try {
     const userEmail = await req.body.emailId;
-
+    console.log(req.cookies)
     const user = await User.findOne({ emailId: userEmail });
 
     if (user) {
